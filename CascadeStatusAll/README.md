@@ -29,7 +29,7 @@ Given a list of **parent record GUIDs** and input parameters, the Plugin:
 > ⚠️ The plugin does **not perform any updates**. It only returns the required records and data.
 ---
 
-## How to create the Custom API
+## How to create and use the Custom API
 
 ### Clone the repository
 
@@ -49,6 +49,11 @@ pac tool prt
 - Connect to your organization
 - `Register > Register new package`.
 - `Register > Register new Custom API` with the specified input and output parameters
+
+### Use the API
+
+- Power Automate unbound action
+- Client Sdk with Javascript
 
 ---
 
