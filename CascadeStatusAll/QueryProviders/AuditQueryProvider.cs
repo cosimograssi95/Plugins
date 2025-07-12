@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk.Query;
 using System;
+using System.Linq;
 namespace CG.Plugins.CascadeStatusAll.QueryProviders
 {
     public static class AuditQueryProvider
@@ -16,7 +17,7 @@ namespace CG.Plugins.CascadeStatusAll.QueryProviders
                         new ConditionExpression(
                             "objectid",
                             ConditionOperator.In,
-                            recordsGuidArray
+                            recordsGuidArray.Cast<object>().ToArray()
                             )
                     },
                     Filters =

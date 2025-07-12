@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk.Query;
 using System;
+using System.Linq;
 namespace CG.Plugins.CascadeStatusAll.QueryProviders
 {
     public static class BusinessProcessFlowQueryProvider
@@ -25,7 +26,7 @@ namespace CG.Plugins.CascadeStatusAll.QueryProviders
                         new ConditionExpression(
                             conditionAttributeLogicalName,
                             ConditionOperator.In,
-                            recordsGuidArray
+                            recordsGuidArray.Cast<object>().ToArray()
                             )
                     }
                 }
