@@ -25,6 +25,8 @@ Given a list of **parent record GUIDs** and input parameters, the Plugin:
 2. Recursively collects child relationships based on the `publisherPrefix` or `entitiesLogicalNamesToInclude`.
 3. Collects the **current or previous states** of all related records, depending on `shouldRestorePreviousStatus`.
 4. Returns all records and their statuses in a expando object, ready for further use.
+
+> ⚠️ The plugin does **not perform any updates**. It only returns the required records and data.
 ---
 
 ## How to create the Custom API
@@ -47,8 +49,6 @@ pac tool prt
 - Connect to your organization
 - `Register > Register new package`.
 - `Register > Register new Custom API` with the specified input and output parameters
-
-> ⚠️ The plugin does **not perform any updates**. It only returns the required records and data.
 
 ---
 
