@@ -90,3 +90,7 @@ This prevent the situation of trying to restore a record that has no audit, atle
 	1. If the API finds the last audit not to match the current state it assumes the audit to be the one before the last so it tries to restore by using the `newValue` instead of `oldValue`.
 	2. The API checks for the audit to be written to be valid by ensuring that the values it is going to write are different from the current record values.
 	3. If both return false, it will restore the values passed as inputs as fallback.
+
+- Feature A
+  1. Option 1
+  2. Option 2
