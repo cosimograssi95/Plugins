@@ -158,7 +158,9 @@ You want to deactivate a parent record and all its children/subchildren state, i
 ### 4. Deactivate Parent and Its Entire Tree, stopping at a certain entity
 
 You want to deactivate a parent record and all its children/subchildren state, stopping at a certain entity.
+
 `entitiesLogicalNamesToExclude` takes precedence over `entitiesLogicalNamesToInclude`.
+
 If children of entities listed in `entitiesLogicalNamesToExclude` are also children of another entity included in the process, those will be processed normally.
 
 **Input:**
