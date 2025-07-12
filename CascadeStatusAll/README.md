@@ -226,23 +226,23 @@ Consider this configuration:
 **EntityChild** record went through this set of changes:
 - From 
 ```yaml
-"Status":"Active",
-"StatusReason":"Active"
+"status":"Active",
+"statusReason":"Active"
 ```
 to
 ```yaml
-"Status":"Inactive",
-"StatusReason":"Self Reason"
+"status":"Inactive",
+"statusReason":"Self Reason"
 ```
 - From 
 ```yaml
-"Status":"Inactive",
-"StatusReason":"Self Reason"
+"status":"Inactive",
+"statusReason":"Self Reason"
 ```
 to
 ```yaml
-"Status":"Inactive",
-"StatusReason":"Parent Reason"
+"status":"Inactive",
+"statusReason":"Parent Reason"
 ```
 
 This can happen if you run the plugin over **EntityChild** record, and later over the **EntityParent** record, overriding the Status Reason with **Parent Reason**.
@@ -251,33 +251,33 @@ In this scenario you want to restore both **EntityParent** record and **EntityCh
 - restore **EntityParent** record first, using `shouldRestorePreviousStatus`. **EntityChild** record goes
 From 
 ```yaml
-"Status":"Inactive",
-"StatusReason":"Parent Reason"
+"status":"Inactive",
+"statusReason":"Parent Reason"
 ```
 to
 ```yaml
-"Status":"Inactive",
-"StatusReason":"Self Reason"
+"status":"Inactive",
+"statusReason":"Self Reason"
 ```
 
 Now you would like to restore the previous state of **EntityChild** record. Since the last state was
 
 ```yaml
-"Status":"Inactive",
-"StatusReason":"Parent Reason"
+"status":"Inactive",
+"statusReason":"Parent Reason"
 ```
 simply setting `shouldRestorePreviousStatus` won't work.
 
 You have to specify `statusReasonNeverRestored` to be **Parent Reason**. 
 This way you skip over
 ```yaml
-"Status":"Inactive",
-"StatusReason":"Parent Reason"
+"status":"Inactive",
+"statusReason":"Parent Reason"
 ```
 and restore
 ```yaml
-"Status":"Active",
-"StatusReason":"Active"
+"status":"Active",
+"statusReason":"Active"
 ```
 
 **Input:**
