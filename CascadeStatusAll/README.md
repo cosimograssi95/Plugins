@@ -52,7 +52,8 @@ Given a list of **parent record GUIDs** and input parameters, the Custom API:
 
 ### 1. Deactivate a Parent and Its Entire Tree
 
-You want to deactivate a parent record and all its children/subchildren with a custom status reason:
+You want to deactivate a parent record and all its children/subchildren with a custom status reason.
+`statusLabel`,`statusReasonLabel` will be used for every entity.
 
 **Input:**
 
@@ -65,18 +66,34 @@ You want to deactivate a parent record and all its children/subchildren with a c
   "shouldUpdateParent": true
 }
 ```
+
+### 1. Restore Parent and Its Entire Tree
+
+You want to restore a parent record and all its children/subchildren with a custom status reason.
+`statusLabel`,`statusReasonLabel` will be used as fallback.
+
+**Input:**
+
+```json
+{
+  "recordsGUID": "parent-guid-1,parent-guid-2",
+  "statusLabel": "Inactive",
+  "statusReasonLabel": "Parent Interrupted",
+  "shouldRestorePreviousStatus": true,
+  "shouldUpdateParent": true
+}
+```
 ---
 
 ## Prerequisites
 
 ### General Requirements
-- Set All Children Status Reason Label the same for all Children Entities except BPF entities, the value doesn't matter
-- The Parent NEEDS to have the same Status Reason Values Labels of Children except BPF entities, but can use less
+- All entities involved in the process, outside of BPF entities, **need** to share atleast `statusLabel`,`statusReasonLabel`, the value doesn't matter.
 
 ### `shouldRestorePreviousStatus` Requirements
-- Enable Auditing on Environment and wait 12 hours for audit data migration to MongoDB-NOSQL
-- Enable Auditing on all custom entities you plan to use for your project except BPF entities
-- Enable Auditing on `statecode` and `statuscode` columns of those entities
+- Enable Auditing on Environment and wait 12 hours for audit data migration to MongoDB-NOSQL.
+- Enable Auditing on all custom entities you plan to use for your project except BPF entities.
+- Enable Auditing on `statecode`,`statuscode` of those entities.
 
 ---
 
@@ -86,7 +103,7 @@ You want to deactivate a parent record and all its children/subchildren with a c
 - If the Audits are cleared, `shouldRestorePreviousStatus` feature flag won't work and `statusLabel`,`statusReasonLabel` will be applied;
 consider setting a data retention policy with the same retention period as the audit one or disable the action altogheter if a certain amount of time has passed since the last change of the record.
 This prevent the situation of trying to restore a record that has no audit, atleast in the case of automatic audit deletion, since it will be retained and read only
-- The API has several failsafes against spamming:
-	- If the API finds the last audit not to match the current state it assumes the audit to be the one before the last so it tries to restore by using the `newValue` instead of `oldValue`.
-	- The API checks for the audit to be written to be valid by ensuring that the values it is going to write are different from the current record values.
-	- If both return false, it will restore the values passed as inputs as fallback.
+- The Plugin has several failsafes against spamming:
+	- If the Plugin finds the last audit record not to match the current state, it assumes the audit record to be the second last so it tries to restore the correct value using the `newValue` instead of `oldValue`.
+	- The Plugin checks the validity of the audit record by ensuring that the values it is going to write are different from the current record values.
+	- If it cannot find a valid audit record, it will restore `statusLabel`,`statusReasonLabel` as fallback.
