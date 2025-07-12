@@ -1,11 +1,9 @@
 ﻿# CascadeStatusAll
 
----
-
 ## Overview
 
 This Plugin implements **cascade retrieval of status and status reason** for a set of parent records and their related children in Microsoft Dataverse.  
-It is intended to be used in combination with **Power Automate** for performing **bulk status updates** via **bulk messages** or **batch API**.
+It is intended to be used in combination with **Power Automate**,**Client Sdk** by performing **bulk status updates** via **bulk messages** or **batch API**.
 
 The plugin supports advanced scenarios such as:
 
@@ -14,6 +12,8 @@ The plugin supports advanced scenarios such as:
 - Entity inclusion/exclusion control.
 - Handling of complex parent-child relationships.
 - Intelligent recalculation of status for shared-child scenarios.
+
+> ⚠️ The plugin uses a **recursive** algorithm. Depending on the amount of records, you might need to chunk the starting dataset in order to avoid **excessive execution time**.
 
 ---
 
@@ -39,7 +39,7 @@ Given a list of **parent record GUIDs** and input parameters, the Plugin:
 | `shouldRestorePreviousStatus`     | Boolean | Whether to retrieve previous Status and Status Reason from Audit history. |
 | `statusLabel`                     | String  | Default status label to use when not restoring from audit. |
 | `statusReasonLabel`               | String  | Default status reason to use when not restoring from audit. |
-| `publisherPrefix`                 | String  | Prefix to filter which entities' children to process. |
+| `publisherPrefix`                 | String  | Prefix to filter which entities to process. |
 | `entitiesLogicalNamesToExclude`   | String(CSV) | Logical names of entities to exclude from the cascading process. |
 | `entitiesLogicalNamesToInclude`   | String(CSV) | Entities to explicitly include even if they don’t match the prefix. |
 | `entitiesLogicalNamesToRecalculate` | String(CSV) | Entities to always recalculate even if previously processed. |
@@ -53,7 +53,7 @@ Given a list of **parent record GUIDs** and input parameters, the Plugin:
 ### 1. Deactivate a Parent and Its Entire Tree
 
 You want to deactivate a parent record and all its children/subchildren with a custom status reason.
-`statusLabel`,`statusReasonLabel` will be used for every entity.
+`statusLabel`,`statusReasonLabel` will be used for every entity record.
 
 **Input:**
 
@@ -93,7 +93,7 @@ You want to restore a parent record and all its children/subchildren state.
 ```
 ### 3. Deactivate a Parent and Its Entire Tree when using standard entities
 
-You want to include Standard Entities in the process.
+You want to deactivate a parent record and all its children/subchildren state, including Standard Entities in the process.
 
 **Input:**
 
@@ -102,7 +102,7 @@ You want to include Standard Entities in the process.
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
   "publisherPrefix" : "new",
-  "shouldRestorePreviousStatus": true,
+  "shouldRestorePreviousStatus": false,
   "shouldUpdateParent": true,
   "entitiesLogicalNamesToExclude": null,
   "entitiesLogicalNamesToInclude": "account,contact,task",
@@ -114,6 +114,7 @@ You want to include Standard Entities in the process.
 
 You want to deactivate a parent record and all its children/subchildren state, stopping at a certain entity.
 `entitiesLogicalNamesToExclude` takes precedence over `entitiesLogicalNamesToInclude`.
+If children of entities listed in `entitiesLogicalNamesToExclude` are also children of another entity included in the process, those will be processed normally.
 
 **Input:**
 
@@ -134,14 +135,14 @@ You want to deactivate a parent record and all its children/subchildren state, s
 
 You want to deactivate a parent record and all its children/subchildren state, but one of the Child entities have multiple parents.
 
-Imagine you have 4 Entities:
-- EntityParent
-- EntityChildA (Parent EntityParent)
-- EntityChildB (Parent EntityParent)
-- EntityFinalChildC (Parent EntityChildA,EntityChildB)
+Consider this configuration:
+- **EntityParent**
+- **EntityChildA** (Parent EntityParent)
+- **EntityChildB** (Parent EntityParent)
+- **EntityFinalChildC** (Parent EntityChildA,EntityChildB)
 - ...
 
-If you do not include `entitiesLogicalNamesToExclude`, some of the EntityFinalChildC records won't be involved in the process since each entity is processed once.
+If you do not include `entitiesLogicalNamesToExclude`, some of the **EntityFinalChildC** records won't be involved in the process since each entity is processed once.
 
 `shouldCascadeRecalculation` controls this behaviour for Child entities of any Entity listed in `entitiesLogicalNamesToExclude`.
 
@@ -151,7 +152,7 @@ setting
   "entitiesLogicalNamesToRecalculate": "EntityFinalChildC",
 ```
 
-we ensure that "EntityFinalChildC" will always be recalculated, and `shouldCascadeRecalculation` ensure its children will be recalculated aswell.
+we ensure that **EntityFinalChildC** will always be recalculated, and `shouldCascadeRecalculation` ensure its children will be recalculated aswell.
 
 **Input:**
 
@@ -173,7 +174,11 @@ we ensure that "EntityFinalChildC" will always be recalculated, and `shouldCasca
 
 You want to restore a record and all its children/subchildren state.
 
-This record went through this kind of changes:
+Consider this configuration:
+- **EntityParent**
+- **EntityChild**
+
+**EntityChild** record went through this set of changes:
 - From 
 ```yaml
 "Status":"Active",
@@ -195,10 +200,10 @@ to
 "StatusReason":"Parent Reason"
 ```
 
-This can happen if you run the plugin over the Child at first, and later over the Parent, overriding the Status Reason.
+This can happen if you run the plugin over **EntityChild** record, and later over the **EntityParent** record, overriding the Status Reason with **Parent Reason**.
 
-In this scenario you want to restore both the Parent and the Child:
-- restore the Parent first, using `shouldRestorePreviousStatus`. The Child goes
+In this scenario you want to restore both **EntityParent** record and **EntityChild** record:
+- restore **EntityParent** record first, using `shouldRestorePreviousStatus`. **EntityChild** record goes
 From 
 ```yaml
 "Status":"Inactive",
@@ -210,7 +215,7 @@ to
 "StatusReason":"Self Reason"
 ```
 
-Now you would like to restore the previous state of the Child. Since the last state was
+Now you would like to restore the previous state of **EntityChild** record. Since the last state was
 
 ```yaml
 "Status":"Inactive",
@@ -218,7 +223,7 @@ Now you would like to restore the previous state of the Child. Since the last st
 ```
 simply setting `shouldRestorePreviousStatus` won't work.
 
-You have to specify `statusReasonNeverRestored` to be "Parent Reason". 
+You have to specify `statusReasonNeverRestored` to be **Parent Reason**. 
 This way you skip over
 ```yaml
 "Status":"Inactive",
@@ -265,7 +270,7 @@ and restore
 - If the Audits are cleared, `shouldRestorePreviousStatus` feature flag won't work and `statusLabel`,`statusReasonLabel` will be applied;
 consider setting a data retention policy with the same retention period as the audit one or disable the action altogheter if a certain amount of time has passed since the last change of the record.
 This prevent the situation of trying to restore a record that has no audit, atleast in the case of automatic audit deletion, since it will be retained and read only
-- The Plugin has several failsafes against spamming:
+- The Plugin has several failsafes:
 	- If the Plugin finds the last audit record not to match the current state, it assumes the audit record to be the second last so it tries to restore the correct value using the `newValue` instead of `oldValue`.
 	- The Plugin checks the validity of the audit record by ensuring that the values it is going to write are different from the current record values.
 	- If it cannot find a valid audit record, it will restore `statusLabel`,`statusReasonLabel` as fallback.
