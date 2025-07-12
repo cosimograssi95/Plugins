@@ -87,6 +87,6 @@ You want to deactivate a parent record and all its children/subchildren with a c
 consider setting a data retention policy with the same retention period as the audit one or disable the action altogheter if a certain amount of time has passed since the last change of the record.
 This prevent the situation of trying to restore a record that has no audit, atleast in the case of automatic audit deletion, since it will be retained and read only
 - The API has several failsafes against spamming:
-1. If the API finds the last audit not to match the current state it assumes the audit to be the one before the last so it tries to restore by using the `newValue` instead of `oldValue`.
-2. The API checks for the audit to be written to be valid by ensuring that the values it is going to write are different from the current record values.
-3. If both return false, it will restore the values passed as inputs as fallback.
+	1. If the API finds the last audit not to match the current state it assumes the audit to be the one before the last so it tries to restore by using the `newValue` instead of `oldValue`.
+	2. The API checks for the audit to be written to be valid by ensuring that the values it is going to write are different from the current record values.
+	3. If both return false, it will restore the values passed as inputs as fallback.
