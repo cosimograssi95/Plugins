@@ -109,17 +109,51 @@ to
 Status:"Inactive",
 StatusReason:"Self Reason"
 ```
-- Status="Active",StatusReason="Active" to Status="Inactive",StatusReason="Self Reason"
-- From Status="Inactive",StatusReason="Self Reason" to Status="Inactive",StatusReason="Parent Reason"
+- From 
+```yaml
+Status:"Inactive",
+StatusReason:"Self Reason"
+```
+to
+```yaml
+Status:"Inactive",
+StatusReason:"Parent Reason"
+```
 
-This can happen if you run the plugin over the Child first, and later over the Parent, overriding the Status Reason.
+This can happen if you run the plugin over the Child at first, and later over the Parent, overriding the Status Reason.
 
-In this scenario you want to:
-- restore the Parent first, making the child go From Status="Inactive",StatusReason="Parent Reason" to Status="Inactive",StatusReason="Self Reason"
+In this scenario you want to restore both the Parent and the Child:
+- restore the Parent first, using `shouldRestorePreviousStatus`. The Child goes
+From 
+```yaml
+Status:"Inactive",
+StatusReason:"Parent Reason"
+```
+to
+```yaml
+Status:"Inactive",
+StatusReason:"Self Reason"
+```
 
-Now you would like to restore the previous state of the Child. Since the last state was Status="Inactive",StatusReason="Parent Reason", simply setting `shouldRestorePreviousStatus` won't work.
+Now you would like to restore the previous state of the Child. Since the last state was
 
-You have to specify `statusReasonNeverRestored` to be "Parent Reason". This way you skip over Status="Inactive",StatusReason="Parent Reason" and restore to Status="Active",StatusReason="Active".
+```yaml
+Status:"Inactive",
+StatusReason:"Parent Reason"
+```
+simply setting `shouldRestorePreviousStatus` won't work.
+
+You have to specify `statusReasonNeverRestored` to be "Parent Reason". 
+This way you skip over
+```yaml
+Status:"Inactive",
+StatusReason:"Parent Reason"
+```
+and restore
+```yaml
+Status:"Active",
+StatusReason:"Active"
+```
 
 **Input:**
 
