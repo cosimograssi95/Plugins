@@ -93,6 +93,7 @@ Given a list of **parent record GUIDs** and input parameters, the Plugin:
   }
 }
 ```
+---
 ## Example Scenarios
 
 ### 1. Deactivate a Parent and Its Entire Tree
