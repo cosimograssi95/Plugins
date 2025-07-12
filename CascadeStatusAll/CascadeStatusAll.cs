@@ -117,7 +117,7 @@ namespace CG.Plugins.CascadeStatusAll
 
 
             #region getContext
-            var context = localPluginContext.PluginExecutionContext;
+            IPluginExecutionContext context = localPluginContext.PluginExecutionContext;
 
             IOrganizationService service = ((IOrganizationServiceFactory)localPluginContext.ServiceProvider.GetService(typeof(IOrganizationServiceFactory))).CreateOrganizationService(null);
 
@@ -274,7 +274,7 @@ namespace CG.Plugins.CascadeStatusAll
                 string exceptionMessage = string.Empty;
 
 
-                foreach (var ex in ae.Flatten().InnerExceptions)
+                foreach (Exception ex in ae.Flatten().InnerExceptions)
                 {
                     exceptionList.Add(ex);
                     exceptionMessage += ex.Message + Environment.NewLine;
@@ -682,7 +682,7 @@ namespace CG.Plugins.CascadeStatusAll
             }
             catch (Exception ex)
             {
-                var exception = new InvalidPluginExecutionException(OperationStatus.Failed,
+                InvalidPluginExecutionException exception = new InvalidPluginExecutionException(OperationStatus.Failed,
                     $"Processing of entity {entityLogicalName} failed: {Environment.NewLine}{ex.Message}");
                 exceptionsQueue.Enqueue(exception);
                 throw exception;
@@ -993,16 +993,16 @@ namespace CG.Plugins.CascadeStatusAll
             .Where(el => el.GetProperty("steps").GetProperty("list").GetArrayLength() > 0)
             .Select(el => new StageObj()
             {
-                id = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("stageId", out var idElement) && idElement.ValueKind == JsonValueKind.String
+                id = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("stageId", out JsonElement idElement) && idElement.ValueKind == JsonValueKind.String
 ? idElement.GetString()
 : "",
-                name = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("description", out var nameElement) && nameElement.ValueKind == JsonValueKind.String
+                name = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("description", out JsonElement nameElement) && nameElement.ValueKind == JsonValueKind.String
 ? nameElement.GetString()
 : "",
-                nextStageId = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("nextStageId", out var stageElement) && stageElement.ValueKind == JsonValueKind.String
+                nextStageId = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("nextStageId", out JsonElement stageElement) && stageElement.ValueKind == JsonValueKind.String
 ? nameElement.GetString()
 : "",
-                innerData = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("steps", out var innerSteps) && innerSteps.TryGetProperty("list", out var innerList)
+                innerData = el.GetProperty("steps").GetProperty("list")[0].TryGetProperty("steps", out JsonElement innerSteps) && innerSteps.TryGetProperty("list", out JsonElement innerList)
                 ? innerList.GetRawText() : ""
 
             })
@@ -1019,13 +1019,13 @@ namespace CG.Plugins.CascadeStatusAll
             if (string.IsNullOrWhiteSpace(entityLogicalNamesCsv))
                 return;
 
-            var entityNames = entityLogicalNamesCsv
+            string[] entityNames = entityLogicalNamesCsv
                 .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(e => e.Trim());
+                .Select(e => e.Trim()).ToArray();
 
             string expectedPrefix = publisherPrefix + "_";
 
-            foreach (var entityName in entityNames)
+            foreach (string entityName in entityNames)
             {
                 if (entityName.StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase) || actionDescription == "include")
                 {
@@ -1042,8 +1042,8 @@ namespace CG.Plugins.CascadeStatusAll
         }
         private bool IsBusinessProcessFlow(IOrganizationService service, string logicalName)
         {
-            var query = ProcessQueryProvider.GetWorkflowByEntityLogicalName(logicalName);
-            var collection = service.RetrieveMultiple(query);
+            QueryExpression query = ProcessQueryProvider.GetWorkflowByEntityLogicalName(logicalName);
+            EntityCollection collection = service.RetrieveMultiple(query);
             return collection.Entities.Any();
         }
 
@@ -1134,7 +1134,7 @@ namespace CG.Plugins.CascadeStatusAll
 
             if (status == -1 || statusReason == -1)
             {
-                var exception = new InvalidPluginExecutionException(OperationStatus.Failed,
+                InvalidPluginExecutionException exception = new InvalidPluginExecutionException(OperationStatus.Failed,
     "Invalid status or statusReason provided");
                 exceptionsQueue.Enqueue(exception);
                 throw exception;
@@ -1152,7 +1152,7 @@ namespace CG.Plugins.CascadeStatusAll
                 auditList = GetAuditsRecords(service, RecordsGUID, statusReasonMetadata.columnNumber, tracingService);
 
 
-                foreach (var _statusReason in statusReasonNeverRestored.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
+                foreach (string _statusReason in statusReasonNeverRestored.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
                 {
                     int _optionset = GetAttributeMetadataFromText(service, entityLogicalName, "statuscode", _statusReason, tracingService).optionValue;
 
