@@ -61,6 +61,7 @@ You want to deactivate a parent record and all its children/subchildren with a c
   "recordsGUID": "parent-guid-1,parent-guid-2",
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
+  "publisherPrefix" : "new",
   "shouldRestorePreviousStatus": false,
   "shouldUpdateParent": true,
   "entitiesLogicalNamesToExclude": null,
@@ -81,6 +82,7 @@ You want to restore a parent record and all its children/subchildren state.
   "recordsGUID": "parent-guid-1,parent-guid-2",
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
+  "publisherPrefix" : "new",
   "shouldRestorePreviousStatus": true,
   "shouldUpdateParent": true,
   "entitiesLogicalNamesToExclude": null,
@@ -89,31 +91,108 @@ You want to restore a parent record and all its children/subchildren state.
   "shouldCascadeRecalculation": false,
   "statusReasonNeverRestored": null
 ```
+### 3. Deactivate a Parent and Its Entire Tree when using standard entities
 
-### 3. Restore Parent and Its Entire Tree when running the Plugin multiple times over the same entity
+You want to include Standard Entities in the process.
 
-You want to restore a record and all its children/subchildren with a custom status reason.
+**Input:**
+
+```yaml
+  "recordsGUID": "parent-guid-1,parent-guid-2",
+  "statusLabel": "Inactive",
+  "statusReasonLabel": "Parent Interrupted",
+  "publisherPrefix" : "new",
+  "shouldRestorePreviousStatus": true,
+  "shouldUpdateParent": true,
+  "entitiesLogicalNamesToExclude": null,
+  "entitiesLogicalNamesToInclude": "account,contact,task",
+  "entitiesLogicalNamesToRecalculate": null,
+  "shouldCascadeRecalculation": false,
+  "statusReasonNeverRestored": null
+```
+### 4. Deactivate Parent and Its Entire Tree, stopping at a certain entity
+
+You want to deactivate a parent record and all its children/subchildren state, stopping at a certain entity.
+`entitiesLogicalNamesToExclude` takes precedence over `entitiesLogicalNamesToInclude`.
+
+**Input:**
+
+```yaml
+  "recordsGUID": "parent-guid-1,parent-guid-2",
+  "statusLabel": "Inactive",
+  "statusReasonLabel": "Parent Interrupted",
+  "publisherPrefix" : "new",
+  "shouldRestorePreviousStatus": true,
+  "shouldUpdateParent": true,
+  "entitiesLogicalNamesToExclude": "new_myentity,account",
+  "entitiesLogicalNamesToInclude": "account",
+  "entitiesLogicalNamesToRecalculate": null,
+  "shouldCascadeRecalculation": false,
+  "statusReasonNeverRestored": null
+```
+### 5. Deactivate Parent and Its Entire Tree, with entities with multiple parents
+
+You want to deactivate a parent record and all its children/subchildren state, but one of the Child entities have multiple parents.
+
+Imagine you have 4 Entities:
+- EntityParent
+- EntityChildA (Parent EntityParent)
+- EntityChildB (Parent EntityParent)
+- EntityFinalChildC (Parent EntityChildA,EntityChildB)
+- ...
+
+If you do not include `entitiesLogicalNamesToExclude`, some of the EntityFinalChildC records won't be involved in the process since each entity is processed once.
+
+`shouldCascadeRecalculation` controls this behaviour for Child entities of any Entity listed in `entitiesLogicalNamesToExclude`.
+
+setting
+```yaml
+  "shouldCascadeRecalculation": true
+  "entitiesLogicalNamesToRecalculate": "EntityFinalChildC",
+```
+
+we ensure that "EntityFinalChildC" will always be recalculated, and `shouldCascadeRecalculation` ensure its children will be recalculated aswell.
+
+**Input:**
+
+```yaml
+  "recordsGUID": "parent-guid-1,parent-guid-2",
+  "statusLabel": "Inactive",
+  "statusReasonLabel": "Parent Interrupted",
+  "publisherPrefix" : "new",
+  "shouldRestorePreviousStatus": false,
+  "shouldUpdateParent": true,
+  "entitiesLogicalNamesToExclude": null,
+  "entitiesLogicalNamesToInclude": null,
+  "entitiesLogicalNamesToRecalculate": "EntityFinalChildC",
+  "shouldCascadeRecalculation": true,
+  "statusReasonNeverRestored": null
+```
+
+### 6. Restore Parent and Its Entire Tree when running the Plugin multiple times over the same entity
+
+You want to restore a record and all its children/subchildren state.
 
 This record went through this kind of changes:
 - From 
 ```yaml
-Status:"Active",
-StatusReason:"Active"
+"Status":"Active",
+"StatusReason":"Active"
 ```
 to
 ```yaml
-Status:"Inactive",
-StatusReason:"Self Reason"
+"Status":"Inactive",
+"StatusReason":"Self Reason"
 ```
 - From 
 ```yaml
-Status:"Inactive",
-StatusReason:"Self Reason"
+"Status":"Inactive",
+"StatusReason":"Self Reason"
 ```
 to
 ```yaml
-Status:"Inactive",
-StatusReason:"Parent Reason"
+"Status":"Inactive",
+"StatusReason":"Parent Reason"
 ```
 
 This can happen if you run the plugin over the Child at first, and later over the Parent, overriding the Status Reason.
@@ -122,33 +201,33 @@ In this scenario you want to restore both the Parent and the Child:
 - restore the Parent first, using `shouldRestorePreviousStatus`. The Child goes
 From 
 ```yaml
-Status:"Inactive",
-StatusReason:"Parent Reason"
+"Status":"Inactive",
+"StatusReason":"Parent Reason"
 ```
 to
 ```yaml
-Status:"Inactive",
-StatusReason:"Self Reason"
+"Status":"Inactive",
+"StatusReason":"Self Reason"
 ```
 
 Now you would like to restore the previous state of the Child. Since the last state was
 
 ```yaml
-Status:"Inactive",
-StatusReason:"Parent Reason"
+"Status":"Inactive",
+"StatusReason":"Parent Reason"
 ```
 simply setting `shouldRestorePreviousStatus` won't work.
 
 You have to specify `statusReasonNeverRestored` to be "Parent Reason". 
 This way you skip over
 ```yaml
-Status:"Inactive",
-StatusReason:"Parent Reason"
+"Status":"Inactive",
+"StatusReason":"Parent Reason"
 ```
 and restore
 ```yaml
-Status:"Active",
-StatusReason:"Active"
+"Status":"Active",
+"StatusReason":"Active"
 ```
 
 **Input:**
@@ -157,6 +236,7 @@ StatusReason:"Active"
   "recordsGUID": "parent-guid-1,parent-guid-2",
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
+  "publisherPrefix" : "new",
   "shouldRestorePreviousStatus": true,
   "shouldUpdateParent": false,
   "entitiesLogicalNamesToExclude": null,
