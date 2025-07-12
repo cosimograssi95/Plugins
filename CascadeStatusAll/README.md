@@ -69,10 +69,11 @@ You want to deactivate a parent record and all its children/subchildren with a c
 
 ## Prerequisites
 
+### General Requirements
 - Set All Children Status Reason Label the same for all Children Entities except BPF entities, the value doesn't matter
 - The Parent NEEDS to have the same Status Reason Values Labels of Children except BPF entities, but can use less
 
-For `shouldRestorePreviousStatus` feature flag
+### `shouldRestorePreviousStatus` Requirements
 - Enable Auditing on Environment and wait 12 hours for audit data migration to MongoDB-NOSQL
 - Enable Auditing on all custom entities you plan to use for your project except BPF entities
 - Enable Auditing on `statecode` and `statuscode` columns of those entities
