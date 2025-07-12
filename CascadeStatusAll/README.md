@@ -17,6 +17,29 @@ The plugin supports advanced scenarios such as:
 
 ---
 
+## How to create the Custom API
+
+### Clone the repository
+
+```bash
+git clone https://github.com/cosimograssi95/Plugins.git
+```
+Build the solution.
+
+### Plugin Registration Tool
+
+If you have PAC CLI installed you can download the tool with
+
+```bash
+pac tool prt
+```
+
+- Connect to your organization
+- `Register > Register new package`.
+- `Register > Register new Custom API` with the specified input and output parameters
+
+---
+
 ## How It Works
 
 Given a list of **parent record GUIDs** and input parameters, the Plugin:
