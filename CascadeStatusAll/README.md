@@ -47,7 +47,52 @@ Given a list of **parent record GUIDs** and input parameters, the Plugin:
 | `statusReasonNeverRestored`       | String(CSV) | Status reasons to ignore when restoring from audit. |
 
 ---
+## Output Parameters
 
+| Parameter                           | Type    | Description |
+|------------------------------------|---------|-------------|
+| `response`                      | EntityCollection | List of response expando objects. |
+
+`response` schema:
+
+```json
+{
+  "title": "response",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "recordId": {
+        "type": "string",
+        "description": "The record identifier"
+      },
+      "statecode": {
+        "type": "string",
+        "description": "The state code"
+      },
+      "statuscode": {
+        "type": "string",
+        "description": "The status code"
+      },
+      "entityLogicalName": {
+        "type": "string",
+        "description": "The logical name of the entity"
+      },
+      "entitySetName": {
+        "type": "string",
+        "description": "The name of the entity set"
+      }
+    },
+    "required": [
+      "recordId",
+      "statecode",
+      "statuscode",
+      "entityLogicalName",
+      "entitySetName"
+    ]
+  }
+}
+```
 ## Example Scenarios
 
 ### 1. Deactivate a Parent and Its Entire Tree
