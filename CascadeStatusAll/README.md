@@ -1,5 +1,7 @@
 ﻿# CascadeStatusAll
 
+---
+
 ## Overview
 
 This plugin implements **cascade retrieval of status and status reason** for a set of parent records and their related children in Microsoft Dataverse.  
@@ -63,16 +65,27 @@ You want to deactivate a parent record and all its children/subchildren with a c
   "shouldUpdateParent": true
 }
 ```
+---
+
+## Prerequisites
+
+- Set All Children Status Reason Label the same for all Children Entities except BPF entities, the value doesn't matter
+- The Parent NEEDS to have the same Status Reason Values Labels of Children except BPF entities, but can use less
+
+For `shouldRestorePreviousStatus` feature flag
+- Enable Auditing on Environment and wait 12 hours for audit data migration to MongoDB-NOSQL
+- Enable Auditing on all custom entities you plan to use for your project except BPF entities
+- Enable Auditing on `statecode` and `statuscode` columns of those entities
 
 ---
 
 ## Limitations
 
 - Standard 5000 items limitation for Dataverse queries applies
-- If the Audits are cleared, "shouldRestorePreviousStatus" feature flag won't work and `statusLabel`,`statusReasonLabel` will be applied;
+- If the Audits are cleared, `shouldRestorePreviousStatus` feature flag won't work and `statusLabel`,`statusReasonLabel` will be applied;
 consider setting a data retention policy with the same retention period as the audit one or disable the action altogheter if a certain amount of time has passed since the last change of the record.
 This prevent the situation of trying to restore a record that has no audit, atleast in the case of automatic audit deletion, since it will be retained and read only
 - The API has several failsafes against spamming:
-1. If the API finds the last audit not to match the current state it assumes the audit to be the one before the last so it tries to restore by using the "newValue" instead of "oldValue".
+1. If the API finds the last audit not to match the current state it assumes the audit to be the one before the last so it tries to restore by using the `newValue` instead of `oldValue`.
 2. The API checks for the audit to be written to be valid by ensuring that the values it is going to write are different from the current record values.
 3. If both return false, it will restore the values passed as inputs as fallback.
