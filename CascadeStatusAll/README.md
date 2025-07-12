@@ -13,8 +13,18 @@ The plugin supports advanced scenarios such as:
 - Handling of complex parent-child relationships.
 - Intelligent recalculation of status for shared-child scenarios.
 
-> ⚠️ The plugin uses a **recursive** algorithm. Depending on the amount of records, you might need to chunk the starting dataset in order to avoid **excessive execution time**.
+> ⚠️ The plugin implements a **recursive** algorithm. Depending on the amount of records, you might need to chunk the starting dataset in order to avoid **excessive execution time**.
 
+---
+
+## How It Works
+
+Given a list of **parent record GUIDs** and input parameters, the Plugin:
+
+1. Retrieves the **status** and **status reason** for parent records.
+2. Recursively collects child relationships based on the `publisherPrefix` or `entitiesLogicalNamesToInclude`.
+3. Collects the **current or previous states** of all related records, depending on `shouldRestorePreviousStatus`.
+4. Returns all records and their statuses in a expando object, ready for further use.
 ---
 
 ## How to create the Custom API
@@ -37,17 +47,6 @@ pac tool prt
 - Connect to your organization
 - `Register > Register new package`.
 - `Register > Register new Custom API` with the specified input and output parameters
-
----
-
-## How It Works
-
-Given a list of **parent record GUIDs** and input parameters, the Plugin:
-
-1. Retrieves the **status** and **status reason** for parent records.
-2. Recursively collects child relationships based on the `publisherPrefix` or `entitiesLogicalNamesToInclude`.
-3. Collects the **current or previous states** of all related records, depending on `shouldRestorePreviousStatus`.
-4. Returns all records and their statuses in a expando object, ready for further use.
 
 > ⚠️ The plugin does **not perform any updates**. It only returns the required records and data.
 
