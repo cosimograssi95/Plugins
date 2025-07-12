@@ -32,19 +32,19 @@ Given a list of **parent record GUIDs** and input parameters, the Plugin:
 
 ## Input Parameters
 
-| Parameter                           | Type    | Description |
-|------------------------------------|---------|-------------|
-| `recordsGUID`                      | String(CSV) | List of parent record GUIDs. |
-| `shouldUpdateParent`              | Boolean | Whether parent records should be included in the output. |
-| `shouldRestorePreviousStatus`     | Boolean | Whether to retrieve previous Status and Status Reason from Audit history. |
-| `statusLabel`                     | String  | Default status label to use when not restoring from audit. |
-| `statusReasonLabel`               | String  | Default status reason to use when not restoring from audit. |
-| `publisherPrefix`                 | String  | Prefix to filter which entities to process. |
-| `entitiesLogicalNamesToExclude`   | String(CSV) | Logical names of entities to exclude from the cascading process. |
-| `entitiesLogicalNamesToInclude`   | String(CSV) | Entities to explicitly include even if they don’t match the prefix. |
-| `entitiesLogicalNamesToRecalculate` | String(CSV) | Entities to always recalculate even if previously processed. |
-| `shouldCascadeRecalculation`      | Boolean | If true, all children of recalculated entities will also be recalculated. |
-| `statusReasonNeverRestored`       | String(CSV) | Status reasons to ignore when restoring from audit. |
+| Parameter                           | Type    | Description | Required |
+|------------------------------------|---------|-------------|-----------|
+| `recordsGUID`                      | String(CSV) | List of parent record GUIDs. | true |
+| `shouldUpdateParent`              | Boolean | Whether parent records should be included in the output. | true |
+| `shouldRestorePreviousStatus`     | Boolean | Whether to retrieve previous Status and Status Reason from Audit history. | true |
+| `statusLabel`                     | String  | Default status label to use when not restoring from audit. | true |
+| `statusReasonLabel`               | String  | Default status reason to use when not restoring from audit. | true |
+| `publisherPrefix`                 | String  | Prefix to filter which entities to process. | true |
+| `entitiesLogicalNamesToExclude`   | String(CSV) | Logical names of entities to exclude from the cascading process. | false | 
+| `entitiesLogicalNamesToInclude`   | String(CSV) | Entities to explicitly include even if they don’t match the prefix. | false |
+| `entitiesLogicalNamesToRecalculate` | String(CSV) | Entities to always recalculate even if previously processed. | false |
+| `shouldCascadeRecalculation`      | Boolean | If true, all children of recalculated entities will also be recalculated. | true |
+| `statusReasonNeverRestored`       | String(CSV) | Status reasons to ignore when restoring from audit. | false |
 
 ---
 ## Output Parameters
