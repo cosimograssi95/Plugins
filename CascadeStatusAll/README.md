@@ -4,27 +4,27 @@
 
 ## Overview
 
-This plugin implements **cascade retrieval of status and status reason** for a set of parent records and their related children in Microsoft Dataverse.  
-It is intended to be used in combination with **Power Automate** for performing **bulk status updates** without making any changes directly.
+This Plugin implements **cascade retrieval of status and status reason** for a set of parent records and their related children in Microsoft Dataverse.  
+It is intended to be used in combination with **Power Automate** for performing **bulk status updates** via **bulk messages** or **batch API**.
 
 The plugin supports advanced scenarios such as:
 
-- Recursive cascade through N-level child relationships
-- Audit-based restoration of previous status and status reason
-- Entity inclusion/exclusion control
-- Handling of complex parent-child relationships
-- Intelligent recalculation of status for shared-child scenarios
+- Recursive cascade through N-level child relationships of any type.
+- Audit-based restoration of previous status and status reason.
+- Entity inclusion/exclusion control.
+- Handling of complex parent-child relationships.
+- Intelligent recalculation of status for shared-child scenarios.
 
 ---
 
 ## How It Works
 
-Given a list of **parent record GUIDs** and input parameters, the Custom API:
+Given a list of **parent record GUIDs** and input parameters, the Plugin:
 
-1. Retrieves the **status** and **status reason** for parent records (if configured).
-2. Recursively collects child relationships based on the `publisherPrefix` or inclusion list.
-3. Collects the **current or previous states** of all related records, depending on flags.
-4. Returns all records and their statuses in a form ready for further use (e.g. Power Automate).
+1. Retrieves the **status** and **status reason** for parent records.
+2. Recursively collects child relationships based on the `publisherPrefix` or `entitiesLogicalNamesToInclude`.
+3. Collects the **current or previous states** of all related records, depending on `shouldRestorePreviousStatus`.
+4. Returns all records and their statuses in a expando object, ready for further use.
 
 > ⚠️ The plugin does **not perform any updates**. It only returns the required records and data.
 
@@ -34,17 +34,17 @@ Given a list of **parent record GUIDs** and input parameters, the Custom API:
 
 | Parameter                           | Type    | Description |
 |------------------------------------|---------|-------------|
-| `recordsGUID`                      | CSV     | List of parent record GUIDs. |
+| `recordsGUID`                      | String(CSV) | List of parent record GUIDs. |
 | `shouldUpdateParent`              | Boolean | Whether parent records should be included in the output. |
 | `shouldRestorePreviousStatus`     | Boolean | Whether to retrieve previous Status and Status Reason from Audit history. |
 | `statusLabel`                     | String  | Default status label to use when not restoring from audit. |
 | `statusReasonLabel`               | String  | Default status reason to use when not restoring from audit. |
 | `publisherPrefix`                 | String  | Prefix to filter which entities' children to process. |
-| `entitiesLogicalNamesToExclude`   | CSV     | Logical names of entities to exclude from the cascading process. |
-| `entitiesLogicalNamesToInclude`   | CSV     | Entities to explicitly include even if they don’t match the prefix. |
-| `entitiesLogicalNamesToRecalculate` | CSV   | Entities to always recalculate even if previously processed. |
+| `entitiesLogicalNamesToExclude`   | String(CSV) | Logical names of entities to exclude from the cascading process. |
+| `entitiesLogicalNamesToInclude`   | String(CSV) | Entities to explicitly include even if they don’t match the prefix. |
+| `entitiesLogicalNamesToRecalculate` | String(CSV) | Entities to always recalculate even if previously processed. |
 | `shouldCascadeRecalculation`      | Boolean | If true, all children of recalculated entities will also be recalculated. |
-| `statusReasonNeverRestored`       | CSV     | Status reasons to ignore when restoring from audit. |
+| `statusReasonNeverRestored`       | String(CSV) | Status reasons to ignore when restoring from audit. |
 
 ---
 
@@ -63,11 +63,16 @@ You want to deactivate a parent record and all its children/subchildren with a c
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
   "shouldRestorePreviousStatus": false,
-  "shouldUpdateParent": true
+  "shouldUpdateParent": true,
+  "entitiesLogicalNamesToExclude": null,
+  "entitiesLogicalNamesToInclude": null,
+  "entitiesLogicalNamesToRecalculate": null,
+  "shouldCascadeRecalculation": false,
+  "statusReasonNeverRestored": null
 }
 ```
 
-### 1. Restore Parent and Its Entire Tree
+### 2. Restore Parent and Its Entire Tree
 
 You want to restore a parent record and all its children/subchildren with a custom status reason.
 `statusLabel`,`statusReasonLabel` will be used as fallback.
@@ -80,7 +85,46 @@ You want to restore a parent record and all its children/subchildren with a cust
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
   "shouldRestorePreviousStatus": true,
-  "shouldUpdateParent": true
+  "shouldUpdateParent": true,
+  "entitiesLogicalNamesToExclude": null,
+  "entitiesLogicalNamesToInclude": null,
+  "entitiesLogicalNamesToRecalculate": null,
+  "shouldCascadeRecalculation": false,
+  "statusReasonNeverRestored": null
+}
+```
+
+### 2. Restore Parent and Its Entire Tree when running the Plugin multiple times over the same entity
+
+You want to restore a record and all its children/subchildren with a custom status reason.
+
+This record went through this kind of changes:
+- From Status="Active",StatusReason="Active" to Status="Inactive",StatusReason="Self Reason"
+- From Status="Inactive",StatusReason="Self Reason" to Status="Inactive",StatusReason="Parent Reason"
+
+This can happen if you run the plugin over the Child first, and later over the Parent, overriding the Status Reason.
+
+In this scenario you want to:
+- restore the Parent first, making the child go From Status="Inactive",StatusReason="Parent Reason" to Status="Inactive",StatusReason="Self Reason"
+
+Now you would like to restore the previous state of the Child. Since the last state was Status="Inactive",StatusReason="Parent Reason", simply setting `shouldRestorePreviousStatus` won't work.
+
+You have to specify `statusReasonNeverRestored` to be "Parent Reason". This way you skip over Status="Inactive",StatusReason="Parent Reason" and restore to Status="Active",StatusReason="Active".
+
+**Input:**
+
+```json
+{
+  "recordsGUID": "parent-guid-1,parent-guid-2",
+  "statusLabel": "Inactive",
+  "statusReasonLabel": "Parent Interrupted",
+  "shouldRestorePreviousStatus": true,
+  "shouldUpdateParent": false,
+  "entitiesLogicalNamesToExclude": null,
+  "entitiesLogicalNamesToInclude": null,
+  "entitiesLogicalNamesToRecalculate": null,
+  "shouldCascadeRecalculation": false,
+  "statusReasonNeverRestored": Parent Reason
 }
 ```
 ---
