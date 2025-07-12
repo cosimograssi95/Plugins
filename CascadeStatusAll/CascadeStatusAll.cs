@@ -88,7 +88,7 @@ namespace CG.Plugins.CascadeStatusAll
     /// - Standard 5000 items limitation for Dataverse queries applies
     /// - Standard 2 minute timeout applies
     /// - If the Audits are cleared, "shouldRestorePreviousStatus" feature flag won't work and "statusLabel","statusReasonLabel" will be applied;
-    /// consider setting a data retention policy with the same retention period as the audit one disable the action altogheter if a certain amount of time has passed
+    /// consider setting a data retention policy with the same retention period as the audit one or disable the action altogheter if a certain amount of time has passed
     /// since the last change of the record,
     /// this prevent the situation of trying to restore a record that has no audit, atleast in the case of automatic audit deletion, since it will be retained and read only
     /// - The API has several failsafes against spamming:
