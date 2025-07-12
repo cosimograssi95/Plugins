@@ -57,8 +57,7 @@ You want to deactivate a parent record and all its children/subchildren with a c
 
 **Input:**
 
-```json
-{
+```yaml
   "recordsGUID": "parent-guid-1,parent-guid-2",
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
@@ -69,7 +68,6 @@ You want to deactivate a parent record and all its children/subchildren with a c
   "entitiesLogicalNamesToRecalculate": null,
   "shouldCascadeRecalculation": false,
   "statusReasonNeverRestored": null
-}
 ```
 
 ### 2. Restore Parent and Its Entire Tree
@@ -79,8 +77,7 @@ You want to restore a parent record and all its children/subchildren state.
 
 **Input:**
 
-```json
-{
+```yaml
   "recordsGUID": "parent-guid-1,parent-guid-2",
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
@@ -91,10 +88,9 @@ You want to restore a parent record and all its children/subchildren state.
   "entitiesLogicalNamesToRecalculate": null,
   "shouldCascadeRecalculation": false,
   "statusReasonNeverRestored": null
-}
 ```
 
-### 2. Restore Parent and Its Entire Tree when running the Plugin multiple times over the same entity
+### 3. Restore Parent and Its Entire Tree when running the Plugin multiple times over the same entity
 
 You want to restore a record and all its children/subchildren with a custom status reason.
 
@@ -157,8 +153,7 @@ StatusReason:"Active"
 
 **Input:**
 
-```json
-{
+```yaml
   "recordsGUID": "parent-guid-1,parent-guid-2",
   "statusLabel": "Inactive",
   "statusReasonLabel": "Parent Interrupted",
@@ -169,7 +164,6 @@ StatusReason:"Active"
   "entitiesLogicalNamesToRecalculate": null,
   "shouldCascadeRecalculation": false,
   "statusReasonNeverRestored": "Parent Reason"
-}
 ```
 ---
 
