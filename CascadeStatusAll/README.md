@@ -193,7 +193,8 @@ If you do not include `entitiesLogicalNamesToExclude`, some of the **EntityFinal
 
 `shouldCascadeRecalculation` controls this behaviour for Child entities of any Entity listed in `entitiesLogicalNamesToExclude`.
 
-setting
+By setting
+
 ```yaml
   "shouldCascadeRecalculation": true
   "entitiesLogicalNamesToRecalculate": "EntityFinalChildC",
