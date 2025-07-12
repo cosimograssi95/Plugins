@@ -74,7 +74,7 @@ You want to deactivate a parent record and all its children/subchildren with a c
 
 ### 2. Restore Parent and Its Entire Tree
 
-You want to restore a parent record and all its children/subchildren with a custom status reason.
+You want to restore a parent record and all its children/subchildren state.
 `statusLabel`,`statusReasonLabel` will be used as fallback.
 
 **Input:**
@@ -124,7 +124,7 @@ You have to specify `statusReasonNeverRestored` to be "Parent Reason". This way 
   "entitiesLogicalNamesToInclude": null,
   "entitiesLogicalNamesToRecalculate": null,
   "shouldCascadeRecalculation": false,
-  "statusReasonNeverRestored": Parent Reason
+  "statusReasonNeverRestored": "Parent Reason"
 }
 ```
 ---
