@@ -99,7 +99,17 @@ You want to restore a parent record and all its children/subchildren state.
 You want to restore a record and all its children/subchildren with a custom status reason.
 
 This record went through this kind of changes:
-- From Status="Active",StatusReason="Active" to Status="Inactive",StatusReason="Self Reason"
+- From 
+```yaml
+Status:"Active",
+StatusReason:"Active"
+```
+to
+```yaml
+Status:"Inactive",
+StatusReason:"Self Reason"
+```
+- Status="Active",StatusReason="Active" to Status="Inactive",StatusReason="Self Reason"
 - From Status="Inactive",StatusReason="Self Reason" to Status="Inactive",StatusReason="Parent Reason"
 
 This can happen if you run the plugin over the Child first, and later over the Parent, overriding the Status Reason.
