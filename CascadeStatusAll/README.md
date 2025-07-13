@@ -217,9 +217,9 @@ Consider this configuration:
 - **EntityFinalChildC** (Parent EntityChildA,EntityChildB)
 - ...
 
-If you do not include `entitiesLogicalNamesToExclude`, some of the **EntityFinalChildC** records won't be involved in the process since each entity is processed once.
+If you do not include `entitiesLogicalNamesToRecalculate`, some of the **EntityFinalChildC** records won't be involved in the process since each entity is processed once.
 
-`shouldCascadeRecalculation` controls this behaviour for Child entities of any Entity listed in `entitiesLogicalNamesToExclude`.
+`shouldCascadeRecalculation` controls this behaviour for Child entities of any Entity listed in `entitiesLogicalNamesToRecalculate`.
 
 By setting
 
