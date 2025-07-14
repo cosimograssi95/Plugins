@@ -1,0 +1,30 @@
+This project is licensed under the MIT License (see LICENSE file).
+
+Third-Party Components:
+
+This software utilizes components from the Microsoft Power Apps SDK and/or Microsoft Dynamics 365 SDK, which are licensed separately by Microsoft Corporation.
+
+These Microsoft SDK components are subject to the Microsoft Software License Terms, which can be found here:
+
+- Microsoft.CrmSdk.CoreAssemblies (v9.0.2.*)
+  https://www.nuget.org/packages/Microsoft.CrmSdk.CoreAssemblies
+
+  Licensed under Microsoft Software License Terms.
+  https://www.microsoft.com/en-us/business-applications/legal/slt-dynamics365-sdk/
+
+- Microsoft.PowerApps.MSBuild.Plugin (v1.*)
+  https://www.nuget.org/packages/Microsoft.PowerApps.MSBuild.Plugin
+
+  Licensed under Microsoft Software License Terms.
+  https://www.nuget.org/packages/Microsoft.PowerApps.MSBuild.Plugin/1.45.2/License
+
+- Microsoft.NETFramework.ReferenceAssemblies (v1.0.*)
+  https://www.nuget.org/packages/Microsoft.NETFramework.ReferenceAssemblies
+
+  Licensed under MIT License.
+  https://github.com/Microsoft/dotnet/blob/main/LICENSE
+
+These components are used for development and/or runtime integration with Microsoft Power Platform and Dynamics 365 services.
+Redistribution of any Microsoft-provided libraries or code must comply with Microsoft's licensing terms.
+
+It is your responsibility to ensure compliance with all applicable third-party license terms.
