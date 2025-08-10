@@ -6,7 +6,7 @@ This plugin implements **an override for the RetrieveMultiple message**, allowin
 It serves as a flexible template, feel free to customize the `customLogic` and `customFilter` regions to fit your specific use case.
 
 
-> ⚠️ Plugin registration on the RetrieveMultiple message should be done cautiously. It is recommended only when no other option is available. For best practices, refer to the official documentation [here](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/best-practices/business-logic/limit-registration-plugins-retrieve-retrievemultiple).
+> ⚠️ Plugin registration on the RetrieveMultiple message should be done cautiously. For best practices, refer to the official documentation [here](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/best-practices/business-logic/limit-registration-plugins-retrieve-retrievemultiple).
 
 ---
 
