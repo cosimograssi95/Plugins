@@ -2,11 +2,11 @@
 
 ## Overview
 
-This Plugin implements **an override for RetrieveMultiple Message** that allows you to query similar records freely within a model driven subgrid.
-This code is meant to serve as a template, feel free to implement your own `customLogic` and `customFilter`. 
+This plugin implements **an override for the RetrieveMultiple message**, allowing you to query related or similar records dynamically within a model-driven subgrid.
+It serves as a flexible template, feel free to customize the `customLogic` and `customFilter` regions to fit your specific use case.
 
 
-> ⚠️ https://learn.microsoft.com/en-us/power-apps/developer/data-platform/best-practices/business-logic/limit-registration-plugins-retrieve-retrievemultiple.
+> ⚠️ Plugin registration on the RetrieveMultiple message should be done cautiously. It is recommended only when no other option is available. For best practices, refer to the official documentation [here](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/best-practices/business-logic/limit-registration-plugins-retrieve-retrievemultiple).
 
 ---
 
@@ -16,11 +16,11 @@ This code is meant to serve as a template, feel free to implement your own `cust
 
 <img width="1701" height="574" alt="image" src="https://github.com/user-attachments/assets/6cf55931-8201-4bef-be3c-88283656b352" />
 
-Given an entity, the Plugin:
+When a RetrieveMultiple message is triggered on an entity, this Plugin:
 
-1. Intercept the RetrieveMultiple message.
-2. Detect if it is called within a subgrid and retrieves the parent entity guid of the form.
-3. Replace the link entity with your custom filter.
+1. Intercepts the RetrieveMultiple request.
+2. Detects if the request originates from within a subgrid and retrieves the parent entity’s GUID from the form context.
+3. Replaces the default link-entity filter with your custom filter logic to return the desired related or similar records.
 
 ---
 
@@ -46,13 +46,15 @@ pac tool prt
 
 ### Use the Plugin
 
-Create a new Step on your entity
+Register a new step on the target entity with these settings:
 
 | Parameter                           | Value    |
 |------------------------------------|---------|
 | `Message`                      | RetrieveMultiple |
-| `Primary Entity`              | {YourEntity} |
+| `Primary Entity`              | `EntityLogicalName` |
 | `Stage`     | PreOperation |
+
+Add a Subgrid to your Entity Form and make sure `Show Related Records` is active
 
 ---
 
@@ -60,12 +62,16 @@ Create a new Step on your entity
 
 ### 1. Show similar records within the same form
 
-You want to show Cases with the same keyword as your currently open Case, or maybe you would like to show all Expenses that happened during the same month as the current open Expense.
+- Display all Cases sharing the same keyword as the currently open Case.
+- Show Expenses occurring within the same month as the current Expense record.
+
+This enables contextual, dynamic filtering in subgrids to improve data relevance.
 
 ---
 
 ## Prerequisites
 
 ### General Requirements
-- The entity you plan to register this plugin on requires a **Self Referential** relationship, implemented by creating a LookUp column on itself. This column data does not need to be filled nor maintained.
+- The target entity must have a **self-referential relationship**: a Lookup column pointing back to the same entity.
+- The Lookup column does not require data population but must exist for the plugin logic to hook into.
 
