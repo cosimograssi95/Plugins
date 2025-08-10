@@ -12,6 +12,10 @@ This code is meant to serve as a template, feel free to implement your own `cust
 
 ## How It Works
 
+<img width="1672" height="412" alt="image" src="https://github.com/user-attachments/assets/d597e0f3-dcdf-40e9-9b73-aa231ceb6e3f" />
+
+<img width="1701" height="574" alt="image" src="https://github.com/user-attachments/assets/6cf55931-8201-4bef-be3c-88283656b352" />
+
 Given an entity, the Plugin:
 
 1. Intercept the RetrieveMultiple message.
@@ -42,7 +46,13 @@ pac tool prt
 
 ### Use the Plugin
 
-- Create a new Step on your entity
+Create a new Step on your entity
+
+| Parameter                           | Value    |
+|------------------------------------|---------|
+| `Message`                      | RetrieveMultiple |
+| `Primary Entity`              | {YourEntity} |
+| `Stage`     | PreOperation |
 
 ---
 
